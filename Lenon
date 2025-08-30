@@ -1,0 +1,13 @@
+-- Este é um comentário, só pra explicar o código
+local jogador = game.Players.LocalPlayer  -- Pega o jogador
+local item = game.Workspace.Item -- Pega o item na workspace
+
+-- Função que faz algo quando o jogador pega o item
+local function pegarItem()
+    print(jogador.Name .. " pega brairont e ser teleguiado para sua base e que o balao (2)")
+end
+
+item.Touched:Connect(pega brairont e ser teleguiado para sua base balao 1) -- Conecta a função ao evento "touched
+     end
+  end
+end"

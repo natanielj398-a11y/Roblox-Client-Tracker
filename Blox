@@ -1,0 +1,101 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local kickRE = ReplicatedStorage:WaitForChild("Belix_KickRE")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+-- Cria GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "BelixHub"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 280, 0, 160)
+frame.Position = UDim2.new(0.5, -140, 0.5, -80)
+frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+frame.BorderSizePixel = 0
+frame.AnchorPoint = Vector2.new(0.5,0.5)
+frame.Parent = screenGui
+
+-- Arrastável
+local dragging = false
+local dragInput, mousePos, framePos
+local function update(input)
+    local delta = input.Position - mousePos
+    frame.Position = UDim2.new(0, framePos.X + delta.X, 0, framePos.Y + delta.Y)
+end
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        mousePos = input.Position
+        framePos = Vector2.new(frame.Position.X.Offset, frame.Position.Y.Offset)
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        update(input)
+    end
+end)
+
+-- Título
+local title = Instance.new("TextLabel")
+title.Text = "Belix Hub"
+title.Size = UDim2.new(1,0,0,30)
+title.Position = UDim2.new(0,0,0,0)
+title.BackgroundColor3 = Color3.fromRGB(50,50,50)
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.Font = Enum.Font.SourceSansBold
+title.TextScaled = true
+title.Parent = frame
+
+-- Fechar botão
+local closeBtn = Instance.new("TextButton")
+closeBtn.Size = UDim2.new(0,30,0,30)
+closeBtn.Position = UDim2.new(1,-35,0,0)
+closeBtn.Text = "X"
+closeBtn.TextColor3 = Color3.fromRGB(255,255,255)
+closeBtn.BackgroundColor3 = Color3.fromRGB(200,50,50)
+closeBtn.Font = Enum.Font.SourceSansBold
+closeBtn.TextScaled = true
+closeBtn.Parent = frame
+closeBtn.MouseButton1Click:Connect(function()
+    screenGui.Enabled = false
+end)
+
+-- TextBox
+local textbox = Instance.new("TextBox")
+textbox.Size = UDim2.new(1,-20,0,40)
+textbox.Position = UDim2.new(0,10,0,50)
+textbox.PlaceholderText = "Nome do jogador"
+textbox.TextColor3 = Color3.fromRGB(255,255,255)
+textbox.BackgroundColor3 = Color3.fromRGB(60,60,60)
+textbox.Parent = frame
+
+-- Botão Remover
+local removeBtn = Instance.new("TextButton")
+removeBtn.Size = UDim2.new(1,-20,0,40)
+removeBtn.Position = UDim2.new(0,10,0,100)
+removeBtn.Text = "Remover"
+removeBtn.BackgroundColor3 = Color3.fromRGB(200,50,50)
+removeBtn.TextColor3 = Color3.fromRGB(255,255,255)
+removeBtn.Font = Enum.Font.SourceSansBold
+removeBtn.TextScaled = true
+removeBtn.Parent = frame
+
+-- Ação do botão
+removeBtn.MouseButton1Click:Connect(function()
+    local targetName = textbox.Text
+    if targetName ~= "" then
+        kickRE:FireServer(targetName)
+    end
+end)
